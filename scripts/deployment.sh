@@ -1,4 +1,4 @@
-#!/bin/bash
+ls#!/bin/bash
 # BooImagine Deployment Script
 # This script automates the setup process for BooImagine on macOS, Linux, and Windows (via Git Bash)
 
@@ -112,6 +112,28 @@ create_directories() {
     print_message "Directories created."
 }
 
+# Clone repository if not already cloned
+clone_repository() {
+    if [[ ! -d "BooImagine" ]]; then
+        print_message "Cloning BooImagine repository..."
+        if ! command_exists git; then
+            print_error "Git is not installed. Please install Git first."
+            exit 1
+        fi
+        git clone https://github.com/Bhuvanesh1729/BooImagine.git
+        cd BooImagine
+    elif [[ ! -f "requirements.txt" && ! -d ".git" ]]; then
+        cd ..
+        print_message "Cloning BooImagine repository..."
+        if ! command_exists git; then
+            print_error "Git is not installed. Please install Git first."
+            exit 1
+        fi
+        git clone https://github.com/Bhuvanesh1729/BooImagine.git
+        cd BooImagine
+    fi
+}
+
 # Main function
 main() {
     print_message "Starting BooImagine setup..."
@@ -125,9 +147,17 @@ main() {
     # Check pip
     check_pip
     
-    # Navigate to project root (assuming script is run from scripts directory)
-    if [[ "$(basename "$(pwd)")" == "scripts" ]]; then
+    # Clone repository if running via curl
+    if [[ ! -f "requirements.txt" ]]; then
+        clone_repository
+    elif [[ "$(basename "$(pwd)")" == "scripts" ]]; then
         cd ..
+    fi
+    
+    # Verify we're in the correct directory
+    if [[ ! -f "requirements.txt" ]]; then
+        print_error "Could not find requirements.txt. Please ensure you're in the BooImagine directory."
+        exit 1
     fi
     
     # Setup virtual environment
