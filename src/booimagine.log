@@ -1,0 +1,36 @@
+2025-03-30 16:17:50,384 - ERROR - Error loading saved prompts: [Errno 2] No such file or directory: 'prompts.json'
+2025-03-30 16:18:16,654 - ERROR - Search failed: object of type 'generator' has no len()
+2025-03-30 16:18:16,656 - ERROR - Traceback (most recent call last):
+  File "/Users/bhuvaneshkumar/Desktop/BooImagine/src/main.py", line 443, in search_models
+    self.progress_frame.update_progress(1.0, "Ready", f"Found {len(models)} models matching '{query}'")
+                                                               ~~~^^^^^^^^
+TypeError: object of type 'generator' has no len()
+
+2025-03-30 16:22:39,401 - ERROR - Error saving prompts: 'BooImagineApp' object has no attribute 'saved_prompts'
+2025-03-30 16:25:58,314 - ERROR - Error loading saved prompts: Expecting value: line 1 column 1 (char 0)
+2025-03-30 16:30:11,899 - ERROR - Error displaying image: 'list' object has no attribute 'mode'
+2025-03-30 16:30:11,900 - ERROR - Traceback (most recent call last):
+  File "/Users/bhuvaneshkumar/Desktop/BooImagine/src/main.py", line 659, in display_image
+    photo = ImageTk.PhotoImage(image)
+  File "/Users/bhuvaneshkumar/Desktop/BooImagine/venv/lib/python3.13/site-packages/PIL/ImageTk.py", line 114, in __init__
+    mode = image.mode
+           ^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'mode'
+
+2025-03-30 16:54:46,076 - INFO - Checking cache directory: /Users/bhuvaneshkumar/.cache/huggingface/hub
+2025-03-30 16:54:46,077 - INFO - Total local models found: 0
+2025-03-30 17:05:42,189 - ERROR - Application error: 'BooImagineApp' object has no attribute 'load_model'
+2025-03-30 17:05:42,190 - ERROR - Traceback (most recent call last):
+  File "/Users/bhuvaneshkumar/Desktop/BooImagine/src/main.py", line 730, in main
+    app = BooImagineApp(root)
+  File "/Users/bhuvaneshkumar/Desktop/BooImagine/src/main.py", line 209, in __init__
+    self.create_ui()
+    ~~~~~~~~~~~~~~^^
+  File "/Users/bhuvaneshkumar/Desktop/BooImagine/src/main.py", line 243, in create_ui
+    self.setup_model_panel()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/bhuvaneshkumar/Desktop/BooImagine/src/main.py", line 308, in setup_model_panel
+    load_button = ctk.CTkButton(info_frame, text="Load Selected Model", command=self.load_model)
+                                                                                ^^^^^^^^^^^^^^^
+AttributeError: 'BooImagineApp' object has no attribute 'load_model'. Did you mean: 'load_models'?
+

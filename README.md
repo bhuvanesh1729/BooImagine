@@ -1,126 +1,147 @@
 # BooImagine
 
-A user-friendly GUI application for browsing, selecting, and utilizing Hugging Face models for image generation.
-
-![BooImagine Logo](docs/logo.png)
+A user-friendly GUI application for browsing, selecting, and utilizing Hugging Face models for image generation. Built with Python and CustomTkinter, BooImagine provides an intuitive interface to interact with state-of-the-art AI image generation models.
 
 ## Features
 
-- **Model Selection**: Browse and search for image generation models from Hugging Face Hub
-- **Image Generation**: Generate images based on text prompts
-- **Style Application**: Apply various artistic styles to your generated images
-- **Prompt Management**: Save and reuse your favorite prompts
-- **Image Editing**: Basic AI-powered image editing capabilities
+### Core Functionality
+- Browse and select pre-trained image generation models from Hugging Face Hub
+- Search functionality to find specific models
+- Generate images based on text prompts
+- Support for image-to-image transformations
+- Basic AI-powered image editing capabilities
+- Save and load custom prompts
+
+### User Interface
+- **Model Selection Panel (Left Side)**
+  - Browse and select models from Hugging Face
+  - View model information and statistics
+  - Search for specific models
+  - Track locally downloaded models
+
+- **Generation Panel (Right Side)**
+  - Text prompt input
+  - Image display area
+  - Style presets for quick modifications
+  - Progress tracking and context window
+  - Save/load prompts and generated images
+
+### Model Types Support
+- Text-to-Image generation
+- Image-to-Image transformation
+- Text-to-Video generation (for supported models)
+- Style transfer and image enhancement
+
+### Technical Features
+- Multi-threaded model loading and image generation
+- GPU acceleration support (when available)
+- Automatic model pipeline selection
+- Token usage tracking
+- Memory usage monitoring
+
+## Requirements
+
+- Python 3.8 or higher
+- pip3
+- Virtual environment (recommended)
+- CUDA-compatible GPU (optional, for better performance)
 
 ## Installation
 
-### Prerequisites
-
-- Python 3.8 or higher
-- pip (Python package installer)
-
-### Quick Install
-
-Option 1: One-line installation (macOS/Linux):
+1. Clone the repository:
 ```bash
-# Remove existing deployment script if present
-rm -f deployment.sh
-
-# Download and run the deployment script directly
-curl -sSL https://raw.githubusercontent.com/Bhuvanesh1729/BooImagine/main/scripts/deployment.sh | bash
-
-# Run the application
-source venv/bin/activate && cd src && python main.py
-```
-
-Option 2: Clone and install:
-```bash
-# Clone the repository
 git clone https://github.com/Bhuvanesh1729/BooImagine.git
 cd BooImagine
-
-# Run the deployment script
-# For macOS/Linux:
-bash scripts/deployment.sh
-# For Windows:
-.\scripts\deployment.bat
-
-# Run the application
-source venv/bin/activate && cd src && python main.py  # For macOS/Linux
-.\venv\Scripts\activate && cd src && python main.py   # For Windows
 ```
 
-For detailed installation instructions, see [deployment.md](deployment.md).
+2. Make the deployment script executable:
+```bash
+chmod +x scripts/deployment.sh
+```
 
-## Usage
+3. Run the deployment script:
+```bash
+./scripts/deployment.sh
+```
 
-### Starting the Application
+The script will:
+- Check for required dependencies
+- Create a virtual environment
+- Install required packages
+- Check for CUDA availability
+- Set up the application
 
-After installation, run the application:
+## Running the Application
+
+After installation, you can run the application using:
 
 ```bash
-# Activate the virtual environment if not already activated
-# For Windows:
-.\venv\Scripts\activate
-# For macOS/Linux:
 source venv/bin/activate
-
-# Run the application
 cd src
 python main.py
 ```
 
-### Basic Workflow
+## Usage Guide
 
-1. **Select a Model**:
-   - Browse the available models in the left panel
+1. **Selecting a Model**
    - Use the search bar to find specific models
+   - Browse the list of available models
    - Click on a model to view its details
    - Click "Load Selected Model" to load it
 
-2. **Create a Prompt**:
-   - Enter your text prompt in the prompt area
-   - Optionally use the style buttons for quick prompts
-   - Click "Generate Image" to create your image
+2. **Generating Images**
+   - Enter your prompt in the text area
+   - Click "Generate" to create an image
+   - Use style presets to modify the generation
+   - Save generated images using the "Save Image" button
 
-3. **Save and Manage Prompts**:
-   - Click "Save Prompt" to save your current prompt
-   - Click "Load Prompt" to use a previously saved prompt
+3. **Managing Prompts**
+   - Save frequently used prompts with "Save Prompt"
+   - Load saved prompts using "Load Prompt"
+   - Apply style presets to enhance prompts
 
-4. **Edit Images**:
-   - Use the image editing buttons to modify your generated image
-   - Options include background removal, enhancement, and more
+4. **Image Editing**
+   - Upload images for transformation
+   - Apply various AI-powered enhancements
+   - Save edited images
 
-## Architecture
+## Troubleshooting
 
-BooImagine follows a simple MVC-inspired architecture:
+### Common Issues
 
-- **Model**: Handles interaction with Hugging Face API and models
-- **View**: Tkinter-based GUI components
-- **Controller**: Application logic connecting the model and view
+1. **Model Loading Fails**
+   - Ensure you have enough disk space
+   - Check your internet connection
+   - Try a different model
+
+2. **CUDA/GPU Issues**
+   - Verify CUDA is properly installed
+   - Update GPU drivers
+   - Check CUDA compatibility with PyTorch
+
+3. **Memory Issues**
+   - Close other resource-intensive applications
+   - Try smaller models
+   - Reduce batch size or image resolution
+
+### Error Logs
+
+The application logs errors and information to `booimagine.log`. Check this file if you encounter issues.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
 
-- [Hugging Face](https://huggingface.co/) for their amazing models and API
-- All the open-source contributors who make their models available
-- The Python and Tkinter communities for their excellent documentation
-
-## Contact
-
-Bhuvanesh - [@Bhuvanesh1729](https://github.com/Bhuvanesh1729)
-
-Project Link: [https://github.com/Bhuvanesh1729/BooImagine](https://github.com/Bhuvanesh1729/BooImagine)
+- [Hugging Face](https://huggingface.co/) for their amazing models and infrastructure
+- [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) for the modern UI components
+- The open-source AI community for their contributions
