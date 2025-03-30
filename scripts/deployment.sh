@@ -53,8 +53,12 @@ check_python() {
     print_message "Python version: $PYTHON_VERSION"
 
     # Check if Python version is at least 3.8
-    if [[ $(echo "$PYTHON_VERSION < 3.8" | bc) -eq 1 ]]; then
-        print_error "Python version must be 3.8 or higher. Please upgrade Python."
+    # Extract major and minor version
+    PYTHON_MAJOR=$(echo $PYTHON_VERSION | cut -d. -f1)
+    PYTHON_MINOR=$(echo $PYTHON_VERSION | cut -d. -f2)
+    
+    if [[ $PYTHON_MAJOR -lt 3 || ($PYTHON_MAJOR -eq 3 && $PYTHON_MINOR -lt 8) ]]; then
+        print_error "Python version must be 3.8 or higher. Current version: $PYTHON_VERSION"
         exit 1
     fi
 }
