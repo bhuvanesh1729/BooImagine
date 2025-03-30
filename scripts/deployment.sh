@@ -1,4 +1,4 @@
-ls#!/bin/bash
+#!/bin/bash
 # BooImagine Deployment Script
 # This script automates the setup process for BooImagine on macOS, Linux, and Windows (via Git Bash)
 

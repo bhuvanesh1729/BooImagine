@@ -16,7 +16,7 @@ from PIL import Image, ImageTk
 import requests
 import io
 import base64
-from huggingface_hub import HfApi, ModelFilter
+from huggingface_hub import HfApi
 from transformers import pipeline
 import torch
 from datetime import datetime
@@ -150,17 +150,54 @@ class BooImagineApp:
             json.dump(self.saved_prompts, f)
     
     def load_models(self):
-        """Load available models from Hugging Face."""
+        """Load available models from Hugging Face and check for locally downloaded models."""
         try:
+            # First check for locally downloaded models
+            local_models = self.get_local_models()
+            
+            # Then fetch models from Hugging Face Hub
             models = self.hf_api.list_models(
-                filter=ModelFilter(task="text-to-image")
+                task="text-to-image"
             )
             
             self.model_listbox.delete(0, tk.END)
+            
+            # Add local models first with a [LOCAL] prefix
+            for model_id in local_models:
+                self.model_listbox.insert(tk.END, f"[LOCAL] {model_id}")
+            
+            # Add online models
             for model in models:
-                self.model_listbox.insert(tk.END, model.id)
+                if model.id not in local_models:  # Avoid duplicates
+                    self.model_listbox.insert(tk.END, model.id)
+            
+            # If no models are found, show a message
+            if self.model_listbox.size() == 0:
+                messagebox.showinfo("No Models", "No models found. Please search and download a model.")
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load models: {str(e)}")
+    
+    def get_local_models(self):
+        """Get list of locally downloaded models."""
+        local_models = []
+        try:
+            # Get the Hugging Face cache directory
+            cache_dir = os.path.expanduser("~/.cache/huggingface/hub")
+            if os.path.exists(cache_dir):
+                # Look for model directories
+                for item in os.listdir(cache_dir):
+                    model_dir = os.path.join(cache_dir, item, "models--")
+                    if os.path.exists(model_dir):
+                        for model_folder in os.listdir(model_dir):
+                            if model_folder.startswith("models--"):
+                                # Convert folder name to model ID
+                                parts = model_folder.split("--")[1:]
+                                if len(parts) >= 2:
+                                    model_id = "/".join(parts)
+                                    local_models.append(model_id)
+        except Exception as e:
+            print(f"Error getting local models: {str(e)}")
+        return local_models
     
     def search_models(self):
         """Search for models based on input."""
@@ -172,7 +209,7 @@ class BooImagineApp:
         try:
             models = self.hf_api.list_models(
                 search=query,
-                filter=ModelFilter(task="text-to-image")
+                task="text-to-image"
             )
             
             self.model_listbox.delete(0, tk.END)
@@ -188,12 +225,33 @@ class BooImagineApp:
             return
             
         model_id = self.model_listbox.get(selection[0])
+        
+        # Remove [LOCAL] prefix if present for API calls
+        api_model_id = model_id
+        if model_id.startswith("[LOCAL] "):
+            api_model_id = model_id[8:]  # Remove the "[LOCAL] " prefix
+        
         try:
-            info = self.hf_api.model_info(model_id)
+            # Update info text with basic information first
             self.model_info.delete(1.0, tk.END)
-            self.model_info.insert(tk.END, f"Model: {info.id}\nAuthor: {info.author}\n")
+            self.model_info.insert(tk.END, f"Model: {api_model_id}\nLoading details...\n")
+            self.model_info.update()
+            
+            # Try to get more info from API
+            try:
+                info = self.hf_api.model_info(api_model_id)
+                self.model_info.delete(1.0, tk.END)
+                self.model_info.insert(tk.END, f"Model: {info.id}\nAuthor: {info.author}\n")
+                if hasattr(info, 'tags') and info.tags:
+                    self.model_info.insert(tk.END, f"Tags: {', '.join(info.tags[:5])}\n")
+            except Exception as e:
+                # If API call fails, just show the model ID
+                self.model_info.delete(1.0, tk.END)
+                self.model_info.insert(tk.END, f"Model: {api_model_id}\n")
+                if model_id.startswith("[LOCAL] "):
+                    self.model_info.insert(tk.END, "Status: Downloaded locally\n")
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to get model info: {str(e)}")
+            print(f"Error in model selection: {str(e)}")
     
     def load_model(self):
         """Load the selected model."""
@@ -203,16 +261,61 @@ class BooImagineApp:
             return
             
         model_id = self.model_listbox.get(selection[0])
+        
+        # Remove [LOCAL] prefix if present
+        if model_id.startswith("[LOCAL] "):
+            model_id = model_id[8:]  # Remove the "[LOCAL] " prefix
+        
         try:
-            self.current_model = pipeline("text-to-image", model=model_id)
+            # Show loading message
+            loading_window = tk.Toplevel(self.root)
+            loading_window.title("Loading Model")
+            loading_window.geometry("300x100")
+            loading_window.transient(self.root)
+            loading_window.grab_set()
+            
+            ttk.Label(loading_window, text=f"Loading model: {model_id}\nThis may take a while...").pack(pady=20)
+            loading_window.update()
+            
+            try:
+                # Try loading with StableDiffusionPipeline first
+                from diffusers import StableDiffusionPipeline
+                self.current_model = StableDiffusionPipeline.from_pretrained(model_id)
+            except Exception as e1:
+                try:
+                    # If that fails, try the general pipeline
+                    self.current_model = pipeline("text-to-image", model=model_id)
+                except Exception as e2:
+                    # If both fail, try with AutoPipeline
+                    from diffusers import AutoPipeline
+                    self.current_model = AutoPipeline.from_pretrained(model_id)
+            
+            # Move to GPU if available
+            if torch.cuda.is_available():
+                self.current_model = self.current_model.to("cuda")
+            
+            # Close loading window
+            loading_window.destroy()
+            
             messagebox.showinfo("Success", f"Model {model_id} loaded successfully")
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to load model: {str(e)}")
+            if 'loading_window' in locals():
+                loading_window.destroy()
+            messagebox.showerror("Error", f"Failed to load model: {str(e)}\n\nPlease try a different model.")
     
     def generate_image(self):
         """Generate image from prompt."""
         if not self.current_model:
-            messagebox.showwarning("Warning", "Please load a model first")
+            response = messagebox.askquestion("No Model Loaded", 
+                                             "No model is currently loaded. Would you like to select and load a model now?")
+            if response == 'yes':
+                if self.model_listbox.size() == 0:
+                    messagebox.showinfo("No Models", "No models found. Please search for a model first.")
+                    return
+                else:
+                    # Select the first model in the list
+                    self.model_listbox.selection_set(0)
+                    self.load_model()
             return
             
         prompt = self.prompt_text.get(1.0, tk.END).strip()
@@ -221,10 +324,31 @@ class BooImagineApp:
             return
             
         try:
+            # Show generating message with progress bar
+            progress_window = tk.Toplevel(self.root)
+            progress_window.title("Generating Image")
+            progress_window.geometry("300x150")
+            progress_window.transient(self.root)
+            progress_window.grab_set()
+            
+            ttk.Label(progress_window, text=f"Generating image from prompt:\n{prompt[:50]}...").pack(pady=10)
+            progress_bar = ttk.Progressbar(progress_window, mode='indeterminate')
+            progress_bar.pack(fill=tk.X, padx=20, pady=10)
+            progress_bar.start()
+            progress_window.update()
+            
+            # Generate the image
             image = self.current_model(prompt)[0]
+            
+            # Close progress window
+            progress_window.destroy()
+            
+            # Display the image
             self.display_image(image)
             self.generated_image = image
         except Exception as e:
+            if 'progress_window' in locals():
+                progress_window.destroy()
             messagebox.showerror("Error", f"Failed to generate image: {str(e)}")
     
     def display_image(self, image):

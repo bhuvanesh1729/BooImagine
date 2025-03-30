@@ -23,8 +23,14 @@ A user-friendly GUI application for browsing, selecting, and utilizing Hugging F
 
 Option 1: One-line installation (macOS/Linux):
 ```bash
+# Remove existing deployment script if present
+rm -f deployment.sh
+
 # Download and run the deployment script directly
 curl -sSL https://raw.githubusercontent.com/Bhuvanesh1729/BooImagine/main/scripts/deployment.sh | bash
+
+# Run the application
+source venv/bin/activate && cd src && python main.py
 ```
 
 Option 2: Clone and install:
@@ -38,6 +44,10 @@ cd BooImagine
 bash scripts/deployment.sh
 # For Windows:
 .\scripts\deployment.bat
+
+# Run the application
+source venv/bin/activate && cd src && python main.py  # For macOS/Linux
+.\venv\Scripts\activate && cd src && python main.py   # For Windows
 ```
 
 For detailed installation instructions, see [deployment.md](deployment.md).
