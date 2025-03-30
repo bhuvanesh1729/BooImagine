@@ -21,6 +21,13 @@ A user-friendly GUI application for browsing, selecting, and utilizing Hugging F
 
 ### Quick Install
 
+Option 1: One-line installation (macOS/Linux):
+```bash
+# Download and run the deployment script directly
+curl -sSL https://raw.githubusercontent.com/Bhuvanesh1729/BooImagine/main/scripts/deployment.sh | bash
+```
+
+Option 2: Clone and install:
 ```bash
 # Clone the repository
 git clone https://github.com/Bhuvanesh1729/BooImagine.git

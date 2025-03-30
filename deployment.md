@@ -9,7 +9,18 @@ Before you begin, ensure you have the following installed:
 - pip (Python package installer)
 - Git (optional, for version control)
 
-## Setup Instructions
+## Quick Install
+
+You can quickly install and set up BooImagine using our deployment script:
+
+```bash
+# Download and run the deployment script directly
+curl -sSL https://raw.githubusercontent.com/Bhuvanesh1729/BooImagine/main/scripts/deployment.sh | bash
+```
+
+This command downloads and executes the deployment script, which will set up the entire environment for you.
+
+## Manual Setup Instructions
 
 1. **Create and Activate Virtual Environment**
 
